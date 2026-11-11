@@ -7,7 +7,8 @@
     "start-os": "electron system/launcher.js",
     "boot:verbose": "node system/boot-mode.js verbose",
     "boot:quiet": "node system/boot-mode.js quiet",
-    "boot:status": "node system/boot-mode.js status"
+    "boot:status": "node system/boot-mode.js status",
+    "start-phone": "electron phone/launcher.js"
   },
   "keywords": [],
   "author": "",

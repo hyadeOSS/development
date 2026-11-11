@@ -1,0 +1,47 @@
+{
+  "passwordHash": "$2b$10$iHpN2kocnfUhTbLFjQElXOuEWpiKsAYLtSWIZ3MDmxnXkz5oFTICq",
+  "updateChannel": "insiders",
+  "quickSettings": {
+    "wifi": true,
+    "bluetooth": true,
+    "dnd": false,
+    "powerMode": "Performance",
+    "connectedWifi": "VODAFONE-UZD4RE",
+    "connectedBt": null,
+    "isEthernet": false,
+    "volume": 100,
+    "nightLight": false,
+    "airplane": false
+  },
+  "rules": [],
+  "rulesEnabled": true,
+  "calendarEvents": [],
+  "username": "mariow",
+  "verified": true,
+  "sendReports": false,
+  "email": "mariowisuseless@gmail.com",
+  "installedApps": [
+    {
+      "appId": "weather",
+      "title": "Weather",
+      "icon": "/desktop/assets/icon_weather_1793267411927.png",
+      "url": "apps/weather/index.html",
+      "repoUrl": "https://github.com/mariowstech/weather.git",
+      "version": null
+    }
+  ],
+  "desktopStyle": {
+    "accent": "#037864",
+    "wallpaperColor": "#1c2333",
+    "wallpaperMode": "image",
+    "gradient": "aurora",
+    "fit": "cover",
+    "uiFont": "Poppins",
+    "brightness": 100,
+    "saturation": 100,
+    "blur": 0,
+    "radius": 16,
+    "glass": 75,
+    "iconScale": 100
+  }
+}

@@ -215,3 +215,9 @@ node_modules/
 
 # Other accounts' home folders (Settings > Users): personal files, never pushed.
 system/user-homes/
+
+# The phone fork keeps its own accounts and sessions: never commit them either.
+phone/config.json
+phone/session.key
+phone/user-homes/
+phone/*.log
