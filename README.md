@@ -137,7 +137,7 @@ Requires Node.js 22.12 or newer.
 git clone https://github.com/mariowOS/development
 cd development
 npm install
-npm run start-os
+npm run start-hidden.vbs
 ```
 
 Electron starts the local backend, shows a boot screen while it checks readiness and preloads desktop images, and then opens the OS fullscreen. Quick Settings can shut down mariowOS or reboot its kernel (restart `system/server.js`) without closing Electron; shutting down mariowOS does not shut down the host computer. This starts the development Electron runtime and does not produce platform installer packages.
