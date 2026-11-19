@@ -156,7 +156,7 @@ To show live startup stages over the boot logo:
 
 ```
 npm run boot:verbose
-npm run start-os
+npm run start-hidden.vbs
 ```
 
 Verbose mode stays enabled across restarts until disabled with `npm run boot:quiet`. Check the current mode with `npm run boot:status`. Startup errors remain visible even when verbose boot is disabled.
