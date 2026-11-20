@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title mariowOS
+title hyadeOSS
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -24,11 +24,11 @@ if not exist "node_modules\electron" (
   exit /b 1
 )
 
-echo booting mariowOS gui...
+echo booting hyadeOSS gui...
 call npm run start-os
 set "exitCode=%errorlevel%"
 if not "%exitCode%"=="0" (
-  echo mariowOS exited with code %exitCode%.
+  echo hyadeOSS exited with code %exitCode%.
   pause
 )
 exit /b %exitCode%
