@@ -19,5 +19,5 @@ if [ ! -d node_modules/electron ]; then
   exit 1
 fi
 
-echo "booting mariowOS gui..."
+echo "booting hyadeOSS gui..."
 exec npm run start-os

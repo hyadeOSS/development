@@ -1,10 +1,10 @@
-# mariowOS Development Changelog
+# hyadeOSS Development Changelog
 
 ### Development Branch — September 2026
 
-And we are back! This is all of what we did in this amazing month. mariowOS really has changed, a lot. You had a taste of the old Tiles desktop, but we completely reimagined how mariowOS should have looked, and here's the result. 
+And we are back! This is all of what we did in this amazing month. hyadeOSS really has changed, a lot. You had a taste of the old Tiles desktop, but we completely reimagined how hyadeOSS should have looked, and here's the result. 
  
-I, personally, noted all the changes and here you go. We're basically ready for you to experience mariowOS, a little fix there and here and we're soon going to drop the update for you.
+I, personally, noted all the changes and here you go. We're basically ready for you to experience hyadeOSS, a little fix there and here and we're soon going to drop the update for you.
 # September Development Cycle
 
 This month has been long, tedious and really blasphemous, a breakdown is:
@@ -38,7 +38,7 @@ But, even if we're almost ready, the latest development tree is still explicitly
 
 One of the largest additions is the new **Sandbox** application.
 
-Sandbox allows mariowOS to load another mariowOS-compatible system from an uploaded ZIP archive and run its `server.js` independently from the host system.
+Sandbox allows hyadeOSS to load another hyadeOSS-compatible system from an uploaded ZIP archive and run its `server.js` independently from the host system.
 ## Architecture
 
 When you upload a ZIP, it gets decompressed and deployed into a virtual disk, which then the kernel searches for a `server.js` entry point:
@@ -106,7 +106,7 @@ if (process.platform === "win32") {
 Temporary ZIP files are bombed after extraction.
 # Isolated Sandbox Ports
 
-Sandbox instances do not simply start on the normal mariowOS port, either the base system would overlap on the VM. The backend allocates ports dynamically:
+Sandbox instances do not simply start on the normal hyadeOSS port, either the base system would overlap on the VM. The backend allocates ports dynamically:
 
 ```js
 let currentSandboxPort = 3001;
@@ -226,7 +226,7 @@ This makes the Store FINALLY capable of handling both complete applications and 
 
 # App icons
 
-When installing an application hosted on GitHub, mariowOS attempts to automatically download:
+When installing an application hosted on GitHub, hyadeOSS attempts to automatically download:
 
 ```text
 icon.png
@@ -254,7 +254,7 @@ This allows Store-installed applications to retain their own branding even when 
 
 Store now supports application-specific EULAs.
 
-Before installation, mariowOS can display an EULA overlay containing the application's license information, in both CLI and GUI stores.
+Before installation, hyadeOSS can display an EULA overlay containing the application's license information, in both CLI and GUI stores.
 
 Store can obtain EULA/license files from repositories using several conventional names:
 
@@ -282,7 +282,7 @@ if (appId === "tiles") {
     path.join(absolutePath, "index.html");
 
   const targetHtml =
-    path.join(__dirname, "desktop", "com.mariowos.twm.html");
+    path.join(__dirname, "desktop", "com.hyadeoss.twm.html");
 
   if (fs.existsSync(sourceHtml)) {
     fs.copyFileSync(sourceHtml, targetHtml);
@@ -346,7 +346,7 @@ Either it will fire repeatedly spamming notifications and overall slowing down t
 
 Rules can also react to system startup.
 
-Before launching an application, mariowOS checks whether that application is actually installed:
+Before launching an application, hyadeOSS checks whether that application is actually installed:
 
 ```js
 const appIsInstalled =
@@ -539,7 +539,7 @@ const local =
 The system checks the stable repository:
 
 ```text
-mariowOS/stable
+hyadeOSS/stable
 ```
 
 and compares its remote `version.json` against the local version.
@@ -572,7 +572,7 @@ Progress is emitted progressively:
 The actual update performs:
 
 ```bash
-git remote set-url origin https://github.com/mariowOS/stable.git
+git remote set-url origin https://github.com/hyadeOSS/stable.git
 git fetch origin main --depth=1
 git reset --hard FETCH_HEAD
 git clean -fd
@@ -676,7 +676,7 @@ The interface includes:
 
 - Jetbrains typography
     
-- `user@mariowos:$` prompt, finally volatile username in the terminal too
+- `user@hyadeoss:$` prompt, finally volatile username in the terminal too
     
 - Command input and output history
     
@@ -781,7 +781,7 @@ Evaluates supported mathematical expressions.
 
 ### `about`
 
-Displays information about mariowOS.
+Displays information about hyadeOSS.
 
 ### `lili`
 
@@ -821,7 +821,7 @@ We also implemented, as stated before store as a cli tool:
 
 ### `get`
 
-Get is the package manager for mariowOS. It can:
+Get is the package manager for hyadeOSS. It can:
 
 - Download apps (get install)
     
@@ -865,7 +865,7 @@ The endpoint gathers:
   architecture,
   kernel,
   node,
-  mariowOS,
+  hyadeOSS,
   user,
   home,
   cwd,
@@ -919,7 +919,7 @@ This creates a controlled architecture:
 
 ```text
 ┌─────────────────────┐
-│   mariowOS Terminal │
+│   hyadeOSS Terminal │
 └──────────┬──────────┘
            │
            │ GET
@@ -935,7 +935,7 @@ This creates a controlled architecture:
 └─────────────────────┘
 ```
 
-The browser UI therefore does not need direct access to the host shell, making, finally, mariowOS an OS on it's own
+The browser UI therefore does not need direct access to the host shell, making, finally, hyadeOSS an OS on it's own
 ## `status`
 
 The new `status` command provides a complete system overview.
@@ -947,7 +947,7 @@ status
 It reports information such as:
 
 ```text
-mariowOS
+hyadeOSS
 Hostname
 Platform
 Architecture
@@ -991,13 +991,13 @@ pwd
 
 ### `version`
 
-Displays the current mariowOS version together with the Node.js runtime version.
+Displays the current hyadeOSS version together with the Node.js runtime version.
 
 ```text
 version
 ```
 
-The mariowOS version is read from:
+The hyadeOSS version is read from:
 
 ```text
 system/version.json
@@ -1232,11 +1232,11 @@ The current Terminal command set includes:
 |Command|Purpose|
 |---|---|
 |`help`|Display available commands|
-|`about`|Display mariowOS information|
+|`about`|Display hyadeOSS information|
 |`clear`|Clear the Terminal|
 |`echo`|Print text|
 |`math`|Perform calculations|
-|`lili`|mariowOS Terminal function/Easter egg|
+|`lili`|hyadeOSS Terminal function/Easter egg|
 |`addkey`|Add a key|
 |`delkey`|Delete a key|
 |`listkeys`|List stored keys|
@@ -1253,7 +1253,7 @@ The current Terminal command set includes:
 |`memory`|Display RAM information|
 |`cpu`|Display CPU information|
 |`network`|Display network interfaces|
-|`version`|Display mariowOS/Node version|
+|`version`|Display hyadeOSS/Node version|
 |`history`|Display command history|
 |`alias`|Display Terminal aliases|
 |`motd`|Display message of the day|
@@ -1352,7 +1352,7 @@ On GitHub, we had stuff going on:
 
 **September 29, 2026**
 
-This commit primarily updates the Node.js dependency tree and introduces Electron as a development dependency. We are trying to make mariowOS an Electron-based runtime for browser compatibility and more system integration
+This commit primarily updates the Node.js dependency tree and introduces Electron as a development dependency. We are trying to make hyadeOSS an Electron-based runtime for browser compatibility and more system integration
 
 ```json
 "devDependencies": {
