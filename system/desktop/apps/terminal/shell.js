@@ -1,5 +1,5 @@
 /*
-hyadeOSS Terminal shell (mwsh) - (C) 2026 mariowstech and the hyadeOSS team
+hyadeOS Terminal shell (mwsh) - (C) 2026 mariowstech and the hyadeOS team
 Licensed under the Apache License, Version 2.0.
 
 The language the Terminal speaks and .mwex scripts are written in: a small POSIX-style

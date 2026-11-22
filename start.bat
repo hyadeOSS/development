@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title hyadeOSS
+title hyadeOS
 cd /d "%~dp0"
 
 where node >nul 2>nul
@@ -24,11 +24,11 @@ if not exist "node_modules\electron" (
   exit /b 1
 )
 
-echo booting hyadeOSS gui...
+echo booting hyadeOS gui...
 call npm run start-os
 set "exitCode=%errorlevel%"
 if not "%exitCode%"=="0" (
-  echo hyadeOSS exited with code %exitCode%.
+  echo hyadeOS exited with code %exitCode%.
   pause
 )
 exit /b %exitCode%

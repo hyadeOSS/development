@@ -1,7 +1,7 @@
 
 
 <!-- 
-hyadeOSS Login User Interface - (C) 2025 mariowstech and the hyadeOSS team 
+hyadeOS Login User Interface - (C) 2025 mariowstech and the hyadeOS team 
 Licensed under the Apache License, Version 2.0; you can use this file if you give credits to the original creators and you may not use this file except in compliance with the License. 
 Obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0. 
 This project use open source and free fonts sourced from Google Fonts. Google Fonts is a trademark of Google LCC, privacy docs are at https://developers.google.com/fonts/faq/privacy 
@@ -250,8 +250,8 @@ applyCustomSettings();
 
 function updateDateTime() {
   const now = new Date();
-  const date = now.toLocaleDateString(hyadeOSSI18n.locale, { weekday: 'long', month: 'long', day: 'numeric' });
-  const time = now.toLocaleTimeString(hyadeOSSI18n.locale, { hour: '2-digit', minute: '2-digit', hour12: false });
+  const date = now.toLocaleDateString(hyadeOSI18n.locale, { weekday: 'long', month: 'long', day: 'numeric' });
+  const time = now.toLocaleTimeString(hyadeOSI18n.locale, { hour: '2-digit', minute: '2-digit', hour12: false });
   document.getElementById('date').textContent = date;
   document.getElementById('time').textContent = time;
 }
@@ -322,15 +322,15 @@ async function attemptUnlock() {
     }
     if (!resp.ok) {
       loginStatus.textContent = resp.status === 409
-        ? hyadeOSSI18n.t('login.no-password', 'No password is configured. Use the recovery flow to set one.')
-        : hyadeOSSI18n.t('login.verify-failed', 'Unable to verify password right now. Please try again.');
+        ? hyadeOSI18n.t('login.no-password', 'No password is configured. Use the recovery flow to set one.')
+        : hyadeOSI18n.t('login.verify-failed', 'Unable to verify password right now. Please try again.');
       return;
     }
 
     document.body.classList.add('unlocking');
-    loginLeave().then(() => { window.location.href = '/desktop/com.hyadeoss.desktop.html'; });
+    loginLeave().then(() => { window.location.href = '/desktop/com.hyadeos.desktop.html'; });
   } catch (error) {
-    loginStatus.textContent = hyadeOSSI18n.t('login.unreachable', 'Unable to reach hyadeOSS. Please try again.');
+    loginStatus.textContent = hyadeOSI18n.t('login.unreachable', 'Unable to reach hyadeOS. Please try again.');
     console.error('Could not verify lockscreen password:', error);
   } finally {
     if (loginStatus.textContent || unlockPill.classList.contains('wrong')) {
@@ -340,7 +340,7 @@ async function attemptUnlock() {
   }
 }
 function showWrong() {
-  loginStatus.textContent = hyadeOSSI18n.t('login.wrong-password', 'Incorrect password. Please try again.');
+  loginStatus.textContent = hyadeOSI18n.t('login.wrong-password', 'Incorrect password. Please try again.');
   unlockPill.classList.add('wrong');
   passwordInput.value = '';
   clearTimeout(wrongTimeout);
@@ -381,7 +381,7 @@ async function loadLoginUsers() {
     b.type = 'button'; b.className = 'user-choice'; b.dataset.id = user.id; b.setAttribute('role', 'option');
     const img = document.createElement('img'); img.alt = ''; img.src = avatarUrl(user.id);
     const text = document.createElement('span'); text.textContent = user.username;
-    const role = document.createElement('small'); role.textContent = user.admin ? hyadeOSSI18n.t('login.role-admin', 'Administrator') : hyadeOSSI18n.t('login.role-standard', 'Standard');
+    const role = document.createElement('small'); role.textContent = user.admin ? hyadeOSI18n.t('login.role-admin', 'Administrator') : hyadeOSI18n.t('login.role-standard', 'Standard');
     text.append(role);
     b.append(img, text);
     b.addEventListener('click', () => selectUser(user.id, true));
@@ -410,7 +410,7 @@ closePopup.addEventListener('click', () => {
 });
 
 redirectPopup.addEventListener('click', () => {
-  window.location.href = '/desktop/fallback/com.hyadeoss.desktop.html';
+  window.location.href = '/desktop/fallback/com.hyadeos.desktop.html';
 });
 
 fetch("/desktop/assets/wallpaper.user.png", { method: "HEAD" })

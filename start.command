@@ -19,5 +19,5 @@ if [ ! -d node_modules/electron ]; then
   exit 1
 fi
 
-echo "booting hyadeOSS gui..."
+echo "booting hyadeOS gui..."
 exec npm run start-os

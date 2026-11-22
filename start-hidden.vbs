@@ -1,5 +1,5 @@
-' hyadeOSS silent launcher: starts the OS without any terminal window.
-' Output is written to system\hyadeoss.log. Use start.bat to see the console for debugging.
+' hyadeOS silent launcher: starts the OS without any terminal window.
+' Output is written to system\hyadeos.log. Use start.bat to see the console for debugging.
 Option Explicit
 Dim shell, fso, root
 Set shell = CreateObject("WScript.Shell")
@@ -14,4 +14,4 @@ If Not fso.FolderExists(root & "\node_modules\electron") Then
 End If
 
 ' 0 = hidden window, False = don't wait.
-shell.Run "cmd /c npm run start-os > ""system\hyadeoss.log"" 2>&1", 0, False
+shell.Run "cmd /c npm run start-os > ""system\hyadeos.log"" 2>&1", 0, False
