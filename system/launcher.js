@@ -1,4 +1,4 @@
-// hyadeOSS Electron entry point. The backend owns the web shell; Electron owns
+// hyadeOS Electron entry point. The backend owns the web shell; Electron owns
 // the fullscreen window and supervises the backend's explicit lifecycle codes.
 const { app, BrowserWindow, ipcMain, shell, globalShortcut, Menu } = require('electron');
 const { spawn } = require('child_process');
@@ -8,11 +8,12 @@ const http = require('http');
 const os = require('os');
 const path = require('path');
 const { pathToFileURL } = require('url');
+const { envVar, envPair } = require('./lib/env');
 
 app.commandLine.appendSwitch('enable-gpu-rasterization');
 app.commandLine.appendSwitch('enable-features', 'CSSBackdropFilter');
 
-const PORT = Number(process.env.HYADEOSS_PORT || 3000);
+const PORT = Number(envVar('PORT') || 3000);
 if (!Number.isInteger(PORT) || PORT < 1 || PORT > 65535) {
     throw new Error('invalid port. it must be a valid TCP port');
 }
@@ -122,7 +123,7 @@ function isTrustedRendererEvent(event) {
     }
 }
 
-ipcMain.handle('hyadeoss:shutdown', async (event) => {
+ipcMain.handle('hyadeos:shutdown', async (event) => {
     if (!isTrustedRendererEvent(event)) throw new Error('shutdown request rejected for an untrusted renderer');
     if (!backendProcess || !backendReady) throw new Error('kernel is not ready to shut down: BUSY');
 
@@ -135,15 +136,15 @@ ipcMain.handle('hyadeoss:shutdown', async (event) => {
 });
 
 // Privacy mode: while it is on, screenshots, screen recordings and screen sharing see
-// hyadeOSS as a blank window (Windows and macOS honour this; elsewhere it does nothing).
-ipcMain.handle('hyadeoss:set-privacy', (event, on) => {
+// hyadeOS as a blank window (Windows and macOS honour this; elsewhere it does nothing).
+ipcMain.handle('hyadeos:set-privacy', (event, on) => {
     if (!isTrustedRendererEvent(event)) throw new Error('privacy request rejected for an untrusted renderer');
     if (!mainWindow || mainWindow.isDestroyed()) return { protected: false };
     mainWindow.setContentProtection(!!on);
     return { protected: !!on && (process.platform === 'win32' || process.platform === 'darwin') };
 });
 
-ipcMain.handle('hyadeoss:clear-browser-data', async (event) => {
+ipcMain.handle('hyadeos:clear-browser-data', async (event) => {
     if (!isTrustedRendererEvent(event)) throw new Error('clear request rejected for an untrusted renderer');
     // Browser tabs live in their own session; extensions keep their own storage.
     const browser = browserExtensions.browserSession();
@@ -153,7 +154,7 @@ ipcMain.handle('hyadeoss:clear-browser-data', async (event) => {
 });
 
 // Browser extensions: only the desktop shell may manage them (see lib/browser-extensions.js).
-const extensionHandler = (name, run) => ipcMain.handle('hyadeoss:extensions-' + name, async (event, ...args) => {
+const extensionHandler = (name, run) => ipcMain.handle('hyadeos:extensions-' + name, async (event, ...args) => {
     if (!isTrustedRendererEvent(event)) throw new Error('extension request rejected for an untrusted renderer');
     return run(...args);
 });
@@ -163,7 +164,7 @@ extensionHandler('load-unpacked', () => browserExtensions.loadUnpacked(mainWindo
 extensionHandler('set-enabled', (id, enabled) => browserExtensions.setEnabled(String(id), !!enabled));
 extensionHandler('remove', id => browserExtensions.remove(String(id)));
 
-ipcMain.handle('hyadeoss:reboot', async (event) => {
+ipcMain.handle('hyadeos:reboot', async (event) => {
     if (!isTrustedRendererEvent(event)) throw new Error('reboot request rejected for an untrusted renderer');
     if (!backendProcess || !backendReady) throw new Error('kernel is not ready to reboot: BUSY');
 
@@ -211,7 +212,7 @@ function restartFromRecovery() {
     if (!backendProcess) startBackend();
 }
 
-ipcMain.handle('hyadeoss:recovery-state', (event) => {
+ipcMain.handle('hyadeos:recovery-state', (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
     const point = rollback.readRollbackPoint(__dirname);
     let version = null;
@@ -223,13 +224,13 @@ ipcMain.handle('hyadeoss:recovery-state', (event) => {
     };
 });
 
-ipcMain.handle('hyadeoss:recovery-retry', (event) => {
+ipcMain.handle('hyadeos:recovery-retry', (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
     restartFromRecovery();
     return { ok: true };
 });
 
-ipcMain.handle('hyadeoss:recovery-rollback', (event) => {
+ipcMain.handle('hyadeos:recovery-rollback', (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
     const restored = rollback.restoreRollbackPoint(__dirname);
     console.warn(`[sniffer]: user restored ${restored.fromVersion || 'the previous version'} from recovery.`);
@@ -237,16 +238,16 @@ ipcMain.handle('hyadeoss:recovery-rollback', (event) => {
     return { ok: true };
 });
 
-ipcMain.handle('hyadeoss:recovery-repair', async (event) => {
+ipcMain.handle('hyadeos:recovery-repair', async (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
     const ok = await installKernelDependencies();
     if (ok) restartFromRecovery();
     return { ok };
 });
 
-ipcMain.handle('hyadeoss:recovery-open-folder', (event) => {
+ipcMain.handle('hyadeos:recovery-open-folder', (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
-    const logFile = path.join(__dirname, 'hyadeoss.log');
+    const logFile = path.join(__dirname, 'hyadeos.log');
     if (fs.existsSync(logFile)) shell.showItemInFolder(logFile);
     else shell.openPath(__dirname);
     return { ok: true };
@@ -254,7 +255,7 @@ ipcMain.handle('hyadeoss:recovery-open-folder', (event) => {
 
 // Sent only when the user presses "Send report" on the recovery screen. Personal details
 // (home folder, user name, email addresses) are removed before anything leaves the device.
-const CRASH_REPORT_URL = `${(process.env.HYADEOSS_MAIL_RELAY_URL || 'https://mariowos-mail.mariowos.workers.dev').replace(/\/+$/, '')}/crash-report`;
+const CRASH_REPORT_URL = `${(envVar('MAIL_RELAY_URL') || 'https://mariowos-mail.mariowos.workers.dev').replace(/\/+$/, '')}/crash-report`;
 function scrubReport(text) {
     let clean = String(text || '');
     const home = os.homedir();
@@ -266,7 +267,7 @@ function scrubReport(text) {
     return clean.replace(/[^\s@'"<>]+@[^\s@'"<>]+\.[a-z]{2,}/gi, '<email>').slice(-6000);
 }
 
-ipcMain.handle('hyadeoss:recovery-send-report', async (event) => {
+ipcMain.handle('hyadeos:recovery-send-report', async (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
     let version = null;
     try { version = JSON.parse(fs.readFileSync(path.join(__dirname, 'version.json'), 'utf8')).version; } catch {}
@@ -279,7 +280,7 @@ ipcMain.handle('hyadeoss:recovery-send-report', async (event) => {
     return { ok: response.ok };
 });
 
-ipcMain.handle('hyadeoss:recovery-quit', (event) => {
+ipcMain.handle('hyadeos:recovery-quit', (event) => {
     if (!isTrustedRecoveryEvent(event)) throw new Error('recovery request rejected');
     shuttingDown = true;
     app.quit();
@@ -389,16 +390,17 @@ function startBackend() {
         }
     }
     const instanceId = crypto.randomBytes(16).toString('hex');
-    const updateMarker = path.join(os.tmpdir(), `hyadeoss-update-${process.pid}-${instanceId}.json`);
-    const child = spawn(process.env.HYADEOSS_NODE_EXECUTABLE || 'node', ['server.js'], {
+    const updateMarker = path.join(os.tmpdir(), `hyadeos-update-${process.pid}-${instanceId}.json`);
+    const child = spawn(envVar('NODE_EXECUTABLE') || 'node', ['server.js'], {
         cwd: __dirname,
         env: {
             ...process.env,
-            ...(process.env.HYADEOSS_NODE_EXECUTABLE ? { ELECTRON_RUN_AS_NODE: '1' } : {}),
-            HYADEOSS_MANAGED_BACKEND: '1',
-            HYADEOSS_BACKEND_INSTANCE_ID: instanceId,
-            HYADEOSS_SHUTDOWN_TOKEN: shutdownToken,
-            HYADEOSS_UPDATE_MARKER: updateMarker
+            ...(envVar('NODE_EXECUTABLE') ? { ELECTRON_RUN_AS_NODE: '1' } : {}),
+            // Both spellings: the server may be older (a rollback) or newer than this launcher.
+            ...envPair('MANAGED_BACKEND', '1'),
+            ...envPair('BACKEND_INSTANCE_ID', instanceId),
+            ...envPair('SHUTDOWN_TOKEN', shutdownToken),
+            ...envPair('UPDATE_MARKER', updateMarker)
         },
         stdio: ['ignore', 'pipe', 'pipe'],
         windowsHide: true
@@ -508,8 +510,8 @@ function startBackend() {
 // The mouse back/forward buttons would walk the shell's history (desktop -> login -> boot...).
 // Swallow them in every frame of the shell; <webview> browser tabs keep their own navigation.
 const MOUSE_NAV_BLOCKER = `(() => {
-    if (window.__hyadeossMouseNavBlocked) return;
-    window.__hyadeossMouseNavBlocked = true;
+    if (window.__hyadeosMouseNavBlocked) return;
+    window.__hyadeosMouseNavBlocked = true;
     const block = event => {
         if (event.button === 3 || event.button === 4) {
             event.preventDefault();
@@ -523,8 +525,8 @@ const MOUSE_NAV_BLOCKER = `(() => {
 // Inside a browser tab the mouse back/forward buttons must walk that tab's history,
 // not the shell's: block the default and navigate the page itself.
 const WEBVIEW_MOUSE_NAV = `(() => {
-    if (window.__hyadeossMouseNav) return;
-    window.__hyadeossMouseNav = true;
+    if (window.__hyadeosMouseNav) return;
+    window.__hyadeosMouseNav = true;
     const handle = event => {
         if (event.button !== 3 && event.button !== 4) return;
         event.preventDefault();
@@ -538,8 +540,8 @@ const WEBVIEW_MOUSE_NAV = `(() => {
 // No scrollbars anywhere in the shell (content still scrolls). Applied per frame so every
 // app and iframe gets it; <webview> browser tabs are separate pages and keep theirs.
 const HIDE_SCROLLBARS = `(() => {
-    if (window.__hyadeossScrollbarsHidden) return;
-    window.__hyadeossScrollbarsHidden = true;
+    if (window.__hyadeosScrollbarsHidden) return;
+    window.__hyadeosScrollbarsHidden = true;
     const sheet = new CSSStyleSheet();
     sheet.replaceSync('* { scrollbar-width: none !important; }');
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
@@ -549,8 +551,8 @@ const HIDE_SCROLLBARS = `(() => {
 // keep their behaviour. It is set on the root so it cascades, and any page can mark text with
 // `user-select: text` to keep it selectable, as inputs and editors are here.
 const BLOCK_TEXT_SELECTION = `(() => {
-    if (window.__hyadeossSelectionBlocked || location.origin !== ${JSON.stringify(new URL(SHELL_URL).origin)}) return;
-    window.__hyadeossSelectionBlocked = true;
+    if (window.__hyadeosSelectionBlocked || location.origin !== ${JSON.stringify(new URL(SHELL_URL).origin)}) return;
+    window.__hyadeosSelectionBlocked = true;
     const sheet = new CSSStyleSheet();
     sheet.replaceSync(':root { user-select: none; } input, textarea, [contenteditable]:not([contenteditable="false"]) { user-select: text; }');
     document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet];
@@ -573,7 +575,7 @@ function blockMouseHistoryNavigation(win) {
     });
 }
 
-function bootHyadeOSS() {
+function bootHyadeOS() {
     if (mainWindow && !mainWindow.isDestroyed()) return;
     shuttingDown = false;
     backendReady = false;
@@ -582,7 +584,7 @@ function bootHyadeOSS() {
         autoHideMenuBar: true,
         frame: false,
         backgroundColor: '#05070b',
-        title: 'hyadeOSS',
+        title: 'hyadeOS',
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false,
@@ -625,7 +627,7 @@ function bootHyadeOSS() {
 }
 
 // --- Alt+Tab: the desktop's window switcher ---
-// Windows keeps Alt+Tab for itself, so while hyadeOSS is the active window it claims the
+// Windows keeps Alt+Tab for itself, so while hyadeOS is the active window it claims the
 // combination (and gives it back the moment another app is active). The keys that follow
 // (more Tabs, the arrows, Esc, letting go of Alt) are read here too, because keyboard focus
 // inside an app or a Browser page never reaches the desktop page.
@@ -716,8 +718,8 @@ function browserShortcutFor(input) {
         '=': 'zoom-in', '+': 'zoom-in', '-': 'zoom-out', '0': 'zoom-reset' }[key] || null;
 }
 
-// Electron's default menu, minus Close Window: its Ctrl+W shut the whole of hyadeOSS. Inside
-// hyadeOSS that key belongs to the apps (the Terminal and the Browser close a tab with it).
+// Electron's default menu, minus Close Window: its Ctrl+W shut the whole of hyadeOS. Inside
+// hyadeOS that key belongs to the apps (the Terminal and the Browser close a tab with it).
 // Editing shortcuts, reload and the developer tools stay as they were.
 function installAppMenu() {
     Menu.setApplicationMenu(Menu.buildFromTemplate([
@@ -732,10 +734,10 @@ app.whenReady().then(async () => {
     console.log('[sniffer]: booting...');
     installAppMenu();
     await browserExtensions.init().catch(error => console.error('[browser]: extensions did not load:', error.message));
-    bootHyadeOSS();
+    bootHyadeOS();
 
     app.on('activate', () => {
-        if (BrowserWindow.getAllWindows().length === 0) bootHyadeOSS();
+        if (BrowserWindow.getAllWindows().length === 0) bootHyadeOS();
     });
 });
 
